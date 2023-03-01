@@ -11,7 +11,7 @@ import (
 
 const (
 	dbDriver = "postgres"
-	dbSource = "postgres://root:hypersus@data.zekehypersus.top:5432/simple_bank?sslmode=disable"
+	dbSource = "postgres://root:hypersus@localhost:5432/simple_bank?sslmode=disable"
 )
 
 var testQueries *Queries
