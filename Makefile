@@ -23,5 +23,8 @@ clean:
 	docker stop postgres12
 	docker rm postgres12
 
+server:
+	go run main.go
+
 .PHONY:
-	postgres createdb dropdb migrateup migratedown test
+	postgres createdb dropdb migrateup migratedown test server
