@@ -110,14 +110,14 @@ func addMoney(
 ) (fromAccount Account, toAccount Account, err error) {
 	fromAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
 		ID:     accountID1,
-		Amount: amount,
+		Amount: -amount,
 	})
 	if err != nil {
 		return
 	}
 	toAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
 		ID:     accountID2,
-		Amount: -amount,
+		Amount: amount,
 	})
 	if err != nil {
 		return
