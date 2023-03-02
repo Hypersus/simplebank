@@ -25,6 +25,7 @@ jobs:
           POSTGRES_PASSWORD: hypersus
         # Set health checks to wait until postgres has started
         options: >-
+          --name postgres12
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
@@ -45,6 +46,9 @@ jobs:
         curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.2/migrate.linux-amd64.tar.gz | tar xvz
         sudo mv migrate /usr/bin
         which migrate
+
+    - name: Create database
+      run: make createdb
     
     - name: Migrate up
       run: make migrateup
