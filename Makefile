@@ -26,5 +26,8 @@ clean:
 server:
 	go run main.go
 
+mock:
+	mockgen -destination db/mock/store.go -package mockdb github.com/Hypersus/simplebank/db/sqlc Store
+
 .PHONY:
-	postgres createdb dropdb migrateup migratedown test server
+	postgres createdb dropdb migrateup migratedown test server mock
