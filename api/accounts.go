@@ -6,11 +6,12 @@ import (
 
 	db "github.com/Hypersus/simplebank/db/sqlc"
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 )
 
 type createAccountRequest struct {
 	Owner    string `json:"owner" binding:"required"`
-	Currency string `json:"currency" binding:"required,oneof=BTC ETH USDT"`
+	Currency string `json:"currency" binding:"required,currency"`
 }
 
 func (s *Server) createAccount(ctx *gin.Context) {
@@ -28,6 +29,12 @@ func (s *Server) createAccount(ctx *gin.Context) {
 
 	account, err := s.store.CreateAccount(ctx, arg)
 	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code.Name() == "unique_violation" {
+				ctx.JSON(http.StatusConflict, errMessage(err))
+				return
+			}
+		}
 		ctx.JSON(http.StatusInternalServerError, errMessage(err))
 		return
 	}
