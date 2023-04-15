@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestjwtMaker(t *testing.T) {
+func TestJWTMaker(t *testing.T) {
 	// generate a random secret key
 	var secretKey = util.RandomString(64)
 	// construct a new jwtMaker
@@ -54,5 +54,5 @@ func TestExpiredToken(t *testing.T) {
 	payload, err := jwtMaker.ValidateToken(token)
 	require.Error(t, err)
 	require.Empty(t, payload)
-	require.Equal(t, ErrTokenExpired, err)
+	require.Equal(t, ErrTokenExpired.Error(), err.Error())
 }
