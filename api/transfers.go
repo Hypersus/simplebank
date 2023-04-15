@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	db "github.com/Hypersus/simplebank/db/sqlc"
+	"github.com/Hypersus/simplebank/token"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,7 +23,21 @@ func (s *Server) createTransfer(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errMessage(err))
 		return
 	}
-	if !s.isValidTransfer(ctx, req.FromAccountID, req.Currency) || !s.isValidTransfer(ctx, req.ToAccountID, req.Currency) {
+	fromAccount, valid := s.isValidTransfer(ctx, req.FromAccountID, req.Currency)
+	if !valid {
+		return
+	}
+	authPayload, ok := ctx.MustGet(authPayloadKey).(*token.Payload)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, errMessage(fmt.Errorf("invalid auth payload")))
+		return
+	}
+	if fromAccount.Owner != authPayload.Username {
+		ctx.JSON(http.StatusUnauthorized, errMessage(fmt.Errorf("account does not belong to the authenticated user")))
+		return
+	}
+	_, valid = s.isValidTransfer(ctx, req.ToAccountID, req.Currency)
+	if !valid {
 		return
 	}
 	arg := db.CreateTransferParams{
@@ -38,21 +53,21 @@ func (s *Server) createTransfer(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, transfer)
 }
 
-func (s *Server) isValidTransfer(ctx *gin.Context, id int64, currency string) bool {
+func (s *Server) isValidTransfer(ctx *gin.Context, id int64, currency string) (db.Account, bool) {
 	account, err := s.store.GetAccount(ctx, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errMessage(err))
-			return false
+			return account, false
 		}
 
 		ctx.JSON(http.StatusInternalServerError, errMessage(err))
-		return false
+		return account, false
 	}
 	if account.Currency != currency {
 		err = fmt.Errorf("currency mismatch: account currency is %v, transfer currency is %s", account.Currency, currency)
 		ctx.JSON(http.StatusBadRequest, errMessage(err))
-		return false
+		return account, false
 	}
-	return true
+	return account, true
 }

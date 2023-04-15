@@ -2,9 +2,11 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 
 	db "github.com/Hypersus/simplebank/db/sqlc"
+	"github.com/Hypersus/simplebank/token"
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 )
@@ -59,6 +61,15 @@ func (s *Server) getAccount(ctx *gin.Context) {
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, errMessage(err))
+		return
+	}
+	authPayload, ok := ctx.MustGet(authPayloadKey).(*token.Payload)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, errMessage(errors.New("invalid auth payload")))
+		return
+	}
+	if account.Owner != authPayload.Username {
+		ctx.JSON(http.StatusUnauthorized, errMessage(errors.New("not allowed")))
 		return
 	}
 	ctx.JSON(http.StatusOK, account)

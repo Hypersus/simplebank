@@ -46,7 +46,7 @@ func RandomCurrency() string {
 	return currencies[rand.Intn(n)]
 }
 
-func RandomHashedPassword() string {
+func RandomPassword() string {
 	return RandomString(10)
 }
 
