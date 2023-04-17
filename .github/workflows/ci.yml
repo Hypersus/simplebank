@@ -50,7 +50,7 @@ jobs:
         which migrate
     
     - name: Migrate up
-      run: migrate -path db/migrations -database "postgres://root:hypersus@localhost:5432/simple_bank?sslmode=disable" up
+      run: migrate -path db/migration -database "postgres://root:hypersus@localhost:5432/simple_bank?sslmode=disable" up
 
     - name: Test
       run: go test -v ./...
