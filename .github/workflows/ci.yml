@@ -16,8 +16,6 @@ jobs:
 # Service containers to run with `container-job`
     container: 
       image: golang:1.20-alpine3.16
-      options:
-        --network ${{ job.services.postgres12.network }}
 
     services:
       # Label used to access the service container
@@ -55,6 +53,8 @@ jobs:
     
     - name: Migrate up
       run: make migrateup
+      env:
+        DB_HOST: localhost
 
     - name: Test
       run: make test
