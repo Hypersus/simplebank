@@ -2,7 +2,7 @@
 include app.env
 
 postgres:
-	docker run --name postgres12 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=hypersus -p 5432:5432 -d postgres:12-alpine
+	docker run --name postgres12 --network bank-network -e POSTGRES_USER=root -e POSTGRES_PASSWORD=hypersus -p 5432:5432 -d postgres:12-alpine
 
 createdb:
 	docker exec postgres12 createdb --username=root --owner=root simple_bank
@@ -11,16 +11,16 @@ dropdb:
 	docker exec postgres12 dropdb simple_bank
 
 migrateup:
-	migrate -path db/migration -database "${DB_SOURCE}" --verbose up
+	migrate -path db/migration -database ${DB_SOURCE} --verbose up
 
 migrateup1:
-	migrate -path db/migration -database "${DB_SOURCE}" --verbose up 1
+	migrate -path db/migration -database ${DB_SOURCE} --verbose up 1
 
 migratedown:
-	migrate -path db/migration -database "${DB_SOURCE}" --verbose down
+	migrate -path db/migration -database ${DB_SOURCE} --verbose down
 
 migratedown1:
-	migrate -path db/migration -database "${DB_SOURCE}" --verbose down 1
+	migrate -path db/migration -database ${DB_SOURCE} --verbose down 1
 	
 sqlc:
 	sqlc generate

@@ -17,6 +17,7 @@ import (
 // )
 
 func main() {
+	// gin.SetMode(gin.ReleaseMode)
 	config, err := util.LoadConfig(".")
 	if err != nil {
 		log.Fatal("config: cannot load config", err)
