@@ -20,7 +20,7 @@ jobs:
       - name: check out code
         uses: actions/checkout@v3
 
-      - name: log in to huawei cloud swr
+      - name: Log in to huawei cloud swr
         uses: huaweicloud/swr-login@v2.1.0
         with:
           access-key-id: ${{ secrets.ACCESSKEY }} 
