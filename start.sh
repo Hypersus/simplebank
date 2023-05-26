@@ -7,6 +7,7 @@ set -e
 echo "migrating database"
 source /app/app.env
 export DB_SOURCE="postgres://postgres:aA5!bB4#bK0!pU4#@192.168.0.212:5432/simple_bank"
+
 echo "DB_SOURCE: ${DB_SOURCE}"
 /app/migrate -path /app/migration -database ${DB_SOURCE} --verbose up
 echo "migrated database"
