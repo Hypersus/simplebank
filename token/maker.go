@@ -45,7 +45,7 @@ func NewMaker(name string) (f func(secretKey string) (TokenMaker, error)) {
 
 type TokenMaker interface {
 	// GenerateToken generates a new token for the given user.
-	GenerateToken(username string, duration time.Duration) (string, error)
+	GenerateToken(username string, duration time.Duration) (string, *Payload, error)
 	// ValidateToken validates the given token and returns the payload
 	// associated with the token if failed return error.
 	ValidateToken(token string) (*Payload, error)
