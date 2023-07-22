@@ -37,6 +37,7 @@ server:
 
 mock:
 	mockgen -destination db/mock/store.go -package mockdb github.com/Hypersus/simplebank/db/sqlc Store
+	mockgen -package mockwk -destination worker/mock/distributor.go github.com/Hypersus/simplebank/worker TaskDistributor
 
 protobuf:
 	rm -f pb/*.go
@@ -47,5 +48,14 @@ protobuf:
 	--openapiv2_out=doc/swagger --openapiv2_opt=allow_merge=true,merge_file_name=simple_bank \
 	proto/*.proto
 
+redis:
+	docker run --name redis -p 6379:6379 -d redis:7-alpine
+
+schema:
+	dbml2sql --postgres -o doc/schema.sql doc/simplebank.dbml
+
+new_migration:
+	migrate create -ext sql -dir db/migration -seq $(name)
+
 .PHONY:
-	postgres createdb dropdb migrateup migratedown test server mock protobuf
+	postgres createdb dropdb migrateup migratedown test server mock protobuf redis schema new_migration

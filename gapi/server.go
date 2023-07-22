@@ -5,6 +5,7 @@ import (
 	"github.com/Hypersus/simplebank/pb"
 	"github.com/Hypersus/simplebank/token"
 	"github.com/Hypersus/simplebank/util"
+	"github.com/Hypersus/simplebank/worker"
 )
 
 type Server struct {
@@ -14,10 +15,11 @@ type Server struct {
 	// token maker for authentication
 	tokenMaker token.TokenMaker
 	// configuration
-	config util.Config
+	config          util.Config
+	taskDistributor worker.TaskDistributor
 }
 
-func NewServer(config util.Config, store db.Store) (*Server, error) {
+func NewServer(config util.Config, store db.Store, distributor worker.TaskDistributor) (*Server, error) {
 	Maker := token.NewMaker(config.TokenType)
 	if Maker == nil {
 		return nil, token.ErrUnregisteredMaker
@@ -27,9 +29,10 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 		return nil, err
 	}
 	server := &Server{
-		store:      store,
-		config:     config,
-		tokenMaker: tokenMaker,
+		store:           store,
+		config:          config,
+		tokenMaker:      tokenMaker,
+		taskDistributor: distributor,
 	}
 	return server, nil
 }
